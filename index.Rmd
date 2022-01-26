@@ -1,5 +1,5 @@
 ---
-title: "SchmidtBio381 webpage"
+title: "Anna Schmidt Bio381 webpage"
 author: "Anna"
 date: "1/26/2022"
 output: html_document
