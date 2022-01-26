@@ -1,0 +1,12 @@
+---
+title: "Homework 2"
+author: "Anna"
+date: "1/26/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+[Back to Home Page](index.html)
