@@ -1,15 +1,18 @@
 ---
 title: "Homework 3"
-author: "Anna"
+author: "Anna Schmidt"
 date: "2/2/2022"
-output: html_document
+output: 
+  html_document: 
+    theme: cerulean
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**Question 1**: Replacing tabs/spaces with commas
+___
+#### **Question 1**: Replacing tabs/spaces with commas
 
 ```
 FIND: \s+\h
@@ -18,8 +21,8 @@ REPLACE: ,
 
 *Explanation*: The original data frame has spaces and tabs that we want to replace with commas. I did this by finding times where two or more spaces occur (by finding variable # of spaces and tabs using `\s+` and `\h`), and replaced them with a comma.
 
-
-**Question 2**: Reformatting collaborator list
+___
+#### **Question 2**: Reformatting collaborator list
 
 ```
 FIND: (\w+), (\w+), (.*)
@@ -27,8 +30,8 @@ REPLACE: \2 \1 (\3)
 ```
 *Explanation*: I captured the first name (using `\w+` for one or more consecutive word characters), last name (same as for the first name), and institution (using .* for all the rest) from the original data frame, and replaced them in the correct order, adding a pair of parentheses around the institution.
 
-
-**Question 3**: Placing file names on their own line
+___
+#### **Question 3**: Placing file names on their own line
 
 ```
 FIND: (\.\w+)\s+
@@ -36,8 +39,8 @@ REPLACE: \1\n
 ```
 *Explanation*: I captured each tune by finding the .mp3 part of the file name (regular period, denoted by `\.`, followed by one or more consecutive word characters), and any spaces after it (using `\s+`), and replaced with the file name and a single line break (using `\n`), which placed each file on its own line.
 
-
-**Question 4**: Moving four digit numbers to the end of the title
+___
+#### **Question 4**: Moving four digit numbers to the end of the title
 
 ```
 FIND: (\d{4}) (.*)(\.\w+)
@@ -45,7 +48,8 @@ REPLACE: \2_\1\3
 ```
 *Explanation*: I captured the four digit number for each file by searching for a sequence of exactly four single number characters (`\d{4}`), and then I captured the song title and the .mp3 part of every file name (see above). For my replace, I rearranged these three components and placed an underscore between the song title and four digit number.
 
-**Question 5**: Rearranging genus/species data set, pt.1
+___
+#### **Question 5**: Rearranging genus/species data set, pt.1
 
 ```
 FIND: (\w)\w+,(\w+),.*,(\d+)
@@ -53,7 +57,8 @@ REPLACE: \1_\2,\3
 ```
 *Explanation*: I captured the first letter of the first word (genus name), the second word (species name), and the last numeric variable (`\d+`) for each line. For my replace, I joined together just these components: genus first letter, followed by an underscore, followed by the species, followed by a comma, followed by the last number.
 
-**Question 6**: Rearranging genus/species data set, pt.2
+___
+#### **Question 6**: Rearranging genus/species data set, pt.2
 
 ```
 FIND: (\w)\w+,(\w{4})\w+,.*,(\d+)
@@ -61,8 +66,8 @@ REPLACE: \1_\2,\3
 ```
 *Explanation*: I did the same thing as in Question 5, but instead of grabbing the whole species name, I grabbed the first four letters of the species name (using `\w{4}` to search for exactly 4 consecutive word characters). Then I joined together the components as I described in Question 5.
 
-
-**Question 7**: Rearranging genus/species data set, pt.3
+___
+#### **Question 7**: Rearranging genus/species data set, pt.3
 
 ```
 FIND: (\w{3})\w+,(\w{3})\w+,(.*),(\d+)
@@ -70,5 +75,5 @@ REPLACE: \1\2, \4, \3
 ```
 *Explanation*: Starting from the original data frame, I captured the first three letters of both the genus name and the species name (using `\w{3}` to search for exactly 3 consecutive word characters). For my replace, I joined together these captured letters, followed by commas separating the numeric variables in the correct order.
 
-
+___
 [Back to Home Page](index.html)

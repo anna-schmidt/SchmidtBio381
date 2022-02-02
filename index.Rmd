@@ -1,7 +1,7 @@
 ---
-title: "Anna Schmidt Bio 381 webpage"
-author: "Anna"
-date: "1/26/2022"
+title: "Anna Schmidt Biology 381 webpage"
+author: ""
+date: "Spring Semester 2022"
 output:
     prettydoc::html_pretty:
     theme: cayman
@@ -12,9 +12,9 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Anna Schmidt's personal webpage for Biology 381, Spring 2022
+Welcome to my personal webpage for Biology 381, Spring Semester 2022!
 
-## Homework Assignments
+### **Homework Assignments**
 Link to [Homework 2](Homework_02.html)
 
 Link to [Homework 3](Homework_03.html)
