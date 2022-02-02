@@ -174,31 +174,31 @@ pre code {
 <p><strong>Question 1</strong>: Replacing tabs/spaces with commas</p>
 <pre><code>FIND: \s+\h
 REPLACE: ,</code></pre>
-<p><em>Explanation</em>: The original data frame has spaces and tabs that we want to replace with commas. I did this by finding times where two or more spaces occur (by finding variable # of spaces and tabs using and , and replaced them with a comma.</p>
+<p><em>Explanation</em>: The original data frame has spaces and tabs that we want to replace with commas. I did this by finding times where two or more spaces occur (by finding variable # of spaces and tabs using <code>\s+</code> and <code>\h</code>), and replaced them with a comma.</p>
 <p><strong>Question 2</strong>: Reformatting collaborator list</p>
 <pre><code>FIND: (\w+), (\w+), (.*)
 REPLACE: \2 \1 (\3)</code></pre>
-<p>Explanation: I captured the first name, last name, and institution from the original data frame, and replaced them in the correct order, adding a pair of parentheses around the institution.</p>
+<p><em>Explanation</em>: I captured the first name (using <code>\w+</code> for one or more consecutive word characters), last name (same as for the first name), and institution (using .* for all the rest) from the original data frame, and replaced them in the correct order, adding a pair of parentheses around the institution.</p>
 <p><strong>Question 3</strong>: Placing file names on their own line</p>
 <pre><code>FIND: (\.\w+)\s+
 REPLACE: \1\n</code></pre>
-<p>Explanation: I captured each tune by finding the .mp3 part of the file name, and any spaces after it, and replaced with each file name followed by a single line break, placing each on its own line.</p>
+<p><em>Explanation</em>: I captured each tune by finding the .mp3 part of the file name (regular period, denoted by <code>\.</code>, followed by one or more consecutive word characters), and any spaces after it (using <code>\s+</code>), and replaced with the file name and a single line break (using <code>\n</code>), which placed each file on its own line.</p>
 <p><strong>Question 4</strong>: Moving four digit numbers to the end of the title</p>
 <pre><code>FIND: (\d{4}) (.*)(\.\w+)
 REPLACE: \2_\1\3</code></pre>
-<p>Explanation: I captured the four digit number for each file by searching for a sequence of exactly four single number characters, and then I captured the song title and the .mp3 part of every file name. For my replace, I rearranged these three components and placed an underscore between the song title and four digit number.</p>
-<p><strong>Question 5</strong>: Rearranging genus/species data set</p>
+<p><em>Explanation</em>: I captured the four digit number for each file by searching for a sequence of exactly four single number characters (<code>\d{4}</code>), and then I captured the song title and the .mp3 part of every file name (see above). For my replace, I rearranged these three components and placed an underscore between the song title and four digit number.</p>
+<p><strong>Question 5</strong>: Rearranging genus/species data set, pt.1</p>
 <pre><code>FIND: (\w)\w+,(\w+),.*,(\d+)
 REPLACE: \1_\2,\3</code></pre>
-<p>Explanation: I captured the first letter of the first word (genus name), the second word (species name), and the last numeric variable for each line. For my replace, I joined together just these components: genus first letter, followed by an underscore, followed by the species, followed by a comma, followed by the last number.</p>
-<p><strong>Question 6</strong>: Rearranging genus/species data set</p>
+<p><em>Explanation</em>: I captured the first letter of the first word (genus name), the second word (species name), and the last numeric variable (<code>\d+</code>) for each line. For my replace, I joined together just these components: genus first letter, followed by an underscore, followed by the species, followed by a comma, followed by the last number.</p>
+<p><strong>Question 6</strong>: Rearranging genus/species data set, pt.2</p>
 <pre><code>FIND: (\w)\w+,(\w{4})\w+,.*,(\d+)
 REPLACE: \1_\2,\3</code></pre>
-<p>Explanation: I did the same thing as in Question 5, but instead of grabbing the whole species name, I grabbed the first four letters of the species name (using <code>\w{4}</code> to search for exactly 4 consecutive word characters). Then I joined together the components as I described in Question 5.</p>
-<p><strong>Question 7</strong>: Rearranging genus/species data set</p>
+<p><em>Explanation</em>: I did the same thing as in Question 5, but instead of grabbing the whole species name, I grabbed the first four letters of the species name (using <code>\w{4}</code> to search for exactly 4 consecutive word characters). Then I joined together the components as I described in Question 5.</p>
+<p><strong>Question 7</strong>: Rearranging genus/species data set, pt.3</p>
 <pre><code>FIND: (\w{3})\w+,(\w{3})\w+,(.*),(\d+)
 REPLACE: \1\2, \4, \3</code></pre>
-<p>Explanation: Starting from the original data frame, I captured the first three letters of both the genus name and the species name (using <code>\w{3}</code> to search for exactly 3 consecutive word characters). For my replace, I joined together these captured letters, followed by commas separating the numeric variables in the correct order.</p>
+<p><em>Explanation</em>: Starting from the original data frame, I captured the first three letters of both the genus name and the species name (using <code>\w{3}</code> to search for exactly 3 consecutive word characters). For my replace, I joined together these captured letters, followed by commas separating the numeric variables in the correct order.</p>
 <p><a href="index.html">Back to Home Page</a></p>
 
 
