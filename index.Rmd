@@ -24,5 +24,3 @@ Link to [Homework 4](Homework_04.html)
 Link to [Homework 5](Homework_05.html)
 
 Link to [Homework 6](Homework_06.html)
-
-

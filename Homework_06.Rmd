@@ -25,6 +25,7 @@ ___
 
 To illustrate, we will generate some fake data here:
 
+(commented out since I replaced with my own data - see below)
 ```{r}
 # # quick and dirty, a truncated normal distribution to work on the solution set
 # 
@@ -38,10 +39,12 @@ To illustrate, we will generate some fake data here:
 
 In the third step of this exercise, you will substitute in your own data for this fake data set. But for now, use the code chunks below to see how you fit different statistical distributions to a vector of observations, and then estimate the maximum likelihood parameters for each distribution.
 
-Loading in my own data:
+**Loading in my own data**
+
+The data I am loading in here is length data (in mm) for zooplankton individuals that we collected at the CEREEP-Ecotron Ile-de-France “PLANAQUA” facility in Saint-Pierre-lès-Nemours, France. The .csv file I am loading in contains length data for zooplankton collected from the epilimnion (surface waters) of Lake 1 at night on August 1st, 2019.
 ```{r}
-z <- read.table("HW6_M1_01AUG2019_N_EP_022_copy.csv",header=TRUE,sep=",")
-z <- data.frame(z$length_mm)
+z <- read.table("HW6_M1_01AUG2019_N_EP_022_copy.csv", header=TRUE, sep=",")
+z <- data.frame(z$length_mm) # only keep the length_mm column
 z <- data.frame(1:223,z)
 names(z) <- list("ID","myVar")
 str(z)
@@ -130,7 +133,7 @@ shapeML <- gammaPars$estimate["shape"]
 rateML <- gammaPars$estimate["rate"]
 
 stat4 <- stat_function(aes(x = xval, y = ..y..), fun = dgamma, colour="brown", n = length(z$myVar), args = list(shape=shapeML, rate=rateML))
- p1 + stat + stat2 + stat3 + stat4 # maroon line is the gamma distribution
+ p1 + stat + stat2 + stat3 + stat4 # brown line is the gamma distribution
 ```
 
 ___
@@ -154,7 +157,7 @@ pSpecial + statSpecial # purple line is the beta distribution
 
 ___
 #### **Part 3**
-**The best-fitting distribution for my zooplankton length data is the gamma distribution.**
+The best-fitting distribution for my zooplankton length data is the **gamma distribution** (brown line above). This distribution follows the general trend of the length data and also slightly incorporates the outliers above 0.6 mm.
 
 ___
 #### **Part 4**
@@ -163,7 +166,7 @@ ___
 ```{r}
 gammaPars <- fitdistr(z$myVar,"gamma")
 shapeML <- gammaPars$estimate["shape"]
-rateML <- gammaPars$estimate["rate"]
+rateML <- gammaPars$estimate["rate"] 
 ```
 
 **Simulating a new data set with the same length as my original vector:**
@@ -193,4 +196,7 @@ print(p1) # dashed line is the empirical curve
 
 **How do the two histogram profiles compare? Do you think the model is doing a good job of simulating realistic data that match your original measurements? Why or why not?**
 
-The two histogram profiles above look relatively similar. The simulated dataset's probability density curve matches the probability density curve of the original dataset: it peaks around a y-axis value of 4, and has a slightly longer tail to the right. My original dataset had two outlier values with lengths over 0.6 mm, and the simulated data tried to capture similar outliers but did not reach quite out to 0.6 mm. Overall, I think the model is going a good job of simulating realistic data that match my original dataset since the shape of the probabilty density curve is preserved and the outliers on the right are captured.
+The two histogram profiles above look relatively similar. The simulated dataset's probability density curve matches the probability density curve of the original dataset: it peaks around a y-axis value of 4, and has a slightly longer tail to the right. My original dataset had two outlier values with lengths over 0.6 mm, and the simulated data captured similar outliers. Overall, I think the model is going a good job of simulating realistic data that match my original dataset since the shape of the probabilty density curve is preserved and the outliers on the right are captured.
+
+___
+[Back to Home Page](index.html) 
