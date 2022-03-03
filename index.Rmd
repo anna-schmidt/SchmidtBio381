@@ -15,14 +15,14 @@ knitr::opts_chunk$set(echo = TRUE)
 Welcome to my personal webpage for Biology 381, Spring Semester 2022!
 
 ### **Homework Assignments**
-Link to [Homework 2](Homework_02.html)
+Link to [Homework 2](Homework_02.html): GitHub
 
-Link to [Homework 3](Homework_03.html)
+Link to [Homework 3](Homework_03.html): Regular expressions
 
-Link to [Homework 4](Homework_04.html)
+Link to [Homework 4](Homework_04.html): Atomic vectors
 
-Link to [Homework 5](Homework_05.html)
+Link to [Homework 5](Homework_05.html): Matrices, lists, and data frames
 
-Link to [Homework 6](Homework_06.html)
+Link to [Homework 6](Homework_06.html): Simulating and fitting data distributions
 
-Link to [Homework 7](Homework_07.html)
+Link to [Homework 7](Homework_07.html): Data manipulations with dplyr
