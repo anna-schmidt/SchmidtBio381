@@ -26,3 +26,5 @@ Link to [Homework 5](Homework_05.html): Matrices, lists, and data frames
 Link to [Homework 6](Homework_06.html): Simulating and fitting data distributions
 
 Link to [Homework 7](Homework_07.html): Data manipulations with dplyr
+
+Link to [Homework 8](Homework_08.html): Data simulations

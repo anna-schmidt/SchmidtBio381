@@ -1,0 +1,219 @@
+---
+title: "Homework 8"
+author: "Anna Schmidt"
+date: "3/16/2022"
+output: 
+  html_document: 
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+___
+**1. Think about an ongoing study in your lab (or a paper you have read in a different class), and decide on a pattern that you might expect in your experiment if a specific hypothesis were true.**
+
+The data that I am going to simulate are count data of rotifers (small microscopic animals) on a 1 mL microscope slide. These samples were collected from experimental ponds, where different treatments are applied (two fish treatments and two nutrient treatments) in order to examine impacts of food web structure and oxygen regime on food web interactions and zooplankton migration. In this assignment, I am simulating count data for samples collected from the four treatment groups, and analyzing whether counts significantly differ between treatments. We hypothesize that treatment will significantly impact rotifer counts due to food web changes.
+
+___
+**2. To start simply, assume that the data in each of your treatment groups follow a normal distribution. Specify the sample sizes, means, and variances for each group that would be reasonable if your hypothesis were true. You may need to consult some previous literature and/or an expert in the field to come up with these numbers.**
+
+These values are roughly based on some actual analyses from my lab. Within each lake group (treatment), of which there are four, the sample size is 36 samples (4 lakes in each group * number of samples we are analyzing for each lake). I chose the values for the means and SDs according to how many rotifers we typically count on a 1 mL slide (these counts are eventually converted to densities according to sample volume and dilution, but I did not go into those calculations here). I chose for the counts to be higher in perch lakes due to our hypotheses about trophic structure in these ponds compared to the lakes without perch. I chose for the counts to be higher in nutrient-enriched lakes vs. non-nutrient-enriched lakes due to our hypotheses about lake productivity and energy in the food web. I arbitrarily assigned different SDs to each group to see how that would impact the statistical analyses.
+
+**Rotifer counts - Lake group 1** (no perch, nutrient addition)
+
+* Sample size: 36
+* Mean: 300
+* SD: 50
+
+**Rotifer counts - Lake group 2** (no perch, no nutrient addition)
+
+* Sample size: 36
+* Mean: 250
+* SD: 20
+
+**Rotifer counts - Lake group 3** (perch, no nutrient addition)
+
+* Sample size: 36
+* Mean: 455
+* SD: 65
+
+**Rotifer counts - Lake group 4** (perch, nutrient addition)
+
+* Sample size: 36
+* Mean: 511
+* SD: 20
+
+___
+**3. Using the methods we have covered in class, write code to create a random data set that has these attributes. Organize these data into a data frame with the appropriate structure.**
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+# Simulate rotifer count data - Lake group 1
+group1 <- rnorm(n = 36, mean = 300, sd = 50)
+hist(group1)
+
+# Simulate rotifer count data - Lake group 2
+group2 <- rnorm(n = 36, mean = 250, sd = 20)
+hist(group2)
+
+# Simulate rotifer count data - Lake group 3
+group3 <- rnorm(n = 36, mean = 455, sd = 65)
+hist(group3)
+
+# Simulate rotifer count data - Lake group 4
+group4 <- rnorm(n = 36, mean = 511, sd = 20)
+hist(group4)
+
+# Create data frame
+d_frame <- data.frame(group1, group2, group3, group4)
+
+# Make the data frame longer
+d_frame <- d_frame %>%
+  pivot_longer(cols = group1:group4,
+               names_to = "group",
+               values_to = "counts")
+head(d_frame)
+```
+
+___
+**4. Now write code to analyze the data (probably as an ANOVA or regression analysis, but possibly as a logistic regression or contingency table analysis). Write code to generate a useful graph of the data.**
+
+Since the predictor variable (x) is discrete (treatment group) and the response variable (y) is continuous (counts), I used an ANOVA to analyze these data. 
+
+```{r}
+# One-way ANOVA analysis
+ano_model <- aov(counts~group, data = d_frame)
+
+z <- summary(ano_model) # model output
+print(z) 
+flat_out <- unlist(z)
+ano_stats <- list(f_ratio <- unlist(z)[7], f_pval <- unlist(z)[9])
+print(ano_stats)
+
+# Plot anova data
+ano_plot <- ggplot(d_frame) +
+            aes(x = group, y = counts) +
+            geom_boxplot()
+print(ano_plot)
+```
+
+___
+**5. Try running your analysis multiple times to get a feeling for how variable the results are with the same parameters, but different sets of random numbers.**
+
+I re-ran the above analysis 10 times to see how the results vary when different sets of random numbers are used. All of these simulations resulted in significant p-values, indicating that there were significant differences between the rotifer counts according to group, each time the simulation was run.
+
+___
+**6. Now begin adjusting the means of the different groups. Given the sample sizes you have chosen, how small can the differences between the groups be (the “effect size”) for you to still detect a significant pattern (p < 0.05)?**
+```{r}
+# Adjusting the means of the different groups:
+group1 <- rnorm(n = 36, mean = 280, sd = 50) # group 1
+group2 <- rnorm(n = 36, mean = 285, sd = 20) # group 2
+group3 <- rnorm(n = 36, mean = 290, sd = 65) # group 3
+group4 <- rnorm(n = 36, mean = 300, sd = 20) # group 4
+
+d_frame <- data.frame(group1, group2, group3, group4)
+d_frame <- d_frame %>%
+  pivot_longer(cols = group1:group4,
+               names_to = "group",
+               values_to = "counts")
+
+# One-way ANOVA analysis
+ano_model <- aov(counts~group, data = d_frame)
+z <- summary(ano_model) # model output
+flat_out <- unlist(z)
+ano_stats <- list(f_ratio <- unlist(z)[7], f_pval <- unlist(z)[9])
+print(ano_stats)
+```
+
+When I change the count means for the four groups to be 280, 285, 290, and 300 (within 20 of each other), this is around where the cutoff seems to be between significance and non-significance. Thus, it seems that the "effect size" is around 20. About half the time, this ANOVA detects a significant pattern (p < 0.05), and the other half of the time the pattern is not significant (p > 0.05). If the differences between the means are smaller than 20, the ANOVA presents a non-significant result most of the time.
+
+___
+**7. Alternatively, for the effect sizes you originally hypothesized, what is the minimum sample size you would need in order to detect a statistically significant effect? Again, run the model a few times with the same parameter set to get a feeling for the effect of random variation in the data.**
+
+```{r}
+# Adjusting the sample sizes of the different groups:
+group1 <- rnorm(n = 2, mean = 300, sd = 50) # group 1
+group2 <- rnorm(n = 2, mean = 250, sd = 20) # group 2
+group3 <- rnorm(n = 2, mean = 455, sd = 65) # group 3
+group4 <- rnorm(n = 2, mean = 511, sd = 20) # group 4
+
+d_frame <- data.frame(group1, group2, group3, group4)
+d_frame <- d_frame %>%
+  pivot_longer(cols = group1:group4,
+               names_to = "group",
+               values_to = "counts")
+
+# One-way ANOVA analysis
+ano_model <- aov(counts~group, data = d_frame)
+z <- summary(ano_model) # model output
+flat_out <- unlist(z)
+ano_stats <- list(f_ratio <- unlist(z)[7], f_pval <- unlist(z)[9])
+print(ano_stats)
+```
+
+The minimum sample size I would need in order to detect a statistically significant effect for this data is 2. Even after running the model a few times with the same parameter set to account for the effect of random variation, each time I run the model with sample sizes of 2 the ANOVA detects a significant pattern (p < 0.05). This is because my simulated data had pretty low standard deviations compared to the differences between the means. Because of this, even with only two data points in each group, the ANOVA still detected a significant pattern. I could do further post-hoc tests to see which groups in particular are and are not significantly different.
+
+___
+**8. Write up your results in a markdown file, organized with headers and different code chunks to show your analysis. Be explicit in your explanation and justification for sample sizes, means, and variances.**
+
+___
+**9. If you have time, try repeating this exercise with one of the more sophisticated distributions, such as the gamma or negative binomial (depending on the kind of data you have). You will have to spend some time figuring out by trial and error the parameter values you will need to generate appropriate means and variances of the different groups.**
+
+Below, I attempt to use the gamma distribution to model my data instead of the normal distribution. Using trial and error, I figured out shape and scale values that generated similar means and SDs as those that I determined for the four groups for the normal distribution. The histograms below show the overlap between the original normal distribution (blue) and new gamma distribution (red) for the four groups.
+
+```{r}
+# Attempting to use the gamma distribution
+
+# group 1
+norm1 <- rnorm(n = 36, mean = 300, sd = 50) 
+gamma1 <- rgamma(n = 36, shape = 20, scale = 15)
+hist(norm1,col='skyblue',border=F, xlim = c(0, 600))
+hist(gamma1,add=T,col=scales::alpha('red',.5),border=F)
+
+# group 2
+norm2 <- rnorm(n = 36, mean = 250, sd = 20)
+gamma2 <- rgamma(n = 36, shape = 35, scale = 7)
+hist(norm2,col='skyblue',border=F, xlim = c(0, 600))
+hist(gamma2,add=T,col=scales::alpha('red',.5),border=F)
+
+# group 3
+norm3 <- rnorm(n = 36, mean = 455, sd = 65)
+gamma3 <- rgamma(n = 36, shape = 70, scale = 7)
+hist(norm3,col='skyblue',border=F, xlim = c(0, 600))
+hist(gamma3,add=T,col=scales::alpha('red',.5),border=F)
+
+# group 4
+norm4 <- rnorm(n = 36, mean = 511, sd = 20)
+gamma4 <- rgamma(n = 36, shape = 125, scale = 4)
+hist(norm4,col='skyblue',border=F, xlim = c(0, 600))
+hist(gamma4,add=T,col=scales::alpha('red',.5),border=F)
+
+d_frame <- data.frame(gamma1, gamma2, gamma3, gamma4)
+d_frame <- d_frame %>%
+  pivot_longer(cols = gamma1:gamma4,
+               names_to = "group",
+               values_to = "counts")
+
+# One-way ANOVA analysis
+ano_model <- aov(counts~group, data = d_frame)
+z <- summary(ano_model) # model output
+flat_out <- unlist(z)
+ano_stats <- list(f_ratio <- unlist(z)[7], f_pval <- unlist(z)[9])
+print(ano_stats)
+
+# Plot anova data
+ano_plot <- ggplot(d_frame) +
+            aes(x = group, y = counts) +
+            geom_boxplot()
+print(ano_plot)
+```
+
+Running this simulation (using the gamma distribution) 10 times resulted in significant p-values each time, indicating that there were significant differences between the rotifer counts according to group.
+
+___
+[Back to Home Page](index.html)
