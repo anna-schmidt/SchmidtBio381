@@ -1,0 +1,218 @@
+---
+title: "Homework 9"
+author: "Anna Schmidt"
+date: "3/23/2022"
+output: 
+  html_document: 
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+___
+**1. Use the code that you worked on in Homework #8 (creating fake data sets), and re-organize it following the principles of structured programming. Do all the work in a single chunk in your R markdown file, just as if you were writing a single R script. Start with all of your annotated functions, preliminary calls, and global variables. The program body should be only a few lines of code that call the appropriate functions and run them in the correct order. Make sure that the output from one function serves as the input to the next. You can either daisy-chain the functions or write separate lines of code to hold elements in temporary variables and pass the along.**
+
+```{r}
+# Description ---------------------------
+# Simulations of a rotifer count data set and ANOVA analysis
+# 23 March 2022
+# AGS
+
+# Initialize ----------------------------
+library(tidyverse)
+library(multcomp)
+set.seed(100)
+
+# Create and Load Functions ------------------------
+
+################################
+# FUNCTION: create_dataset
+# purpose: create a simulated data frame of rotifer counts for the four lake groups
+# input: n (sample size)
+# output: data frame
+# ------------------------------
+create_dataset <- function(n = sample(20:80, 1)) {
+  
+  # create data frame
+  d_frame <- data.frame(group1 = rnorm(n = n, mean = 300, sd = 50), # simulate count data, group 1
+                        group2 = rnorm(n = n, mean = 250, sd = 20), # simulate count data, group 2
+                        group3 = rnorm(n = n, mean = 455, sd = 65), # simulate count data, group 3
+                        group4 = rnorm(n = n, mean = 511, sd = 20)) # simulate count data, group 4
+  
+  d_frame <- d_frame %>% pivot_longer(cols = group1:group4, # make the data frame longer
+                                      names_to = "group",
+                                      values_to = "counts")
+  return(d_frame)
+}
+
+#create_dataset()
+
+
+################################
+# FUNCTION: run_stats
+# purpose: run one-way ANOVA analysis and extract p-value
+# input: data frame of rotifer counts for the four lake groups, and n
+# output: p value from one-way ANOVA
+# ------------------------------
+run_stats <- function(data = NULL, n = sample(20:80, 1)) {
+  if(is.null(data)) {
+    d_frame <- data.frame(group = rep(c("group1", "group2", "group3", "group4"), each = n), 
+                          counts = runif(4*n, min=200, max=600))
+  }
+
+  ano_model <- aov(counts~group, data = d_frame)
+  z <- summary(ano_model) # model output
+  ano_stats <- list(f_pval <- unlist(z)[9])
+  return(ano_stats)
+}
+
+#run_stats()
+
+################################
+# FUNCTION: graph_data
+# purpose: create a boxplot of the rotifer counts in the four groups
+# input: data frame of rotifer counts for the four lake groups, and n
+# output: boxplot of rotifer counts for the four lake groups
+# ------------------------------
+graph_data <- function(data = NULL, n = sample(20:80, 1)) {
+  if(is.null(data)) {
+    d_frame <- data.frame(group = rep(c("group1", "group2", "group3", "group4"), each = n), 
+                          counts = runif(4*n, min=200, max=600))
+  }
+  
+  ano_plot <- ggplot(data = d_frame) +
+            aes(x = group, y = counts) +
+            geom_boxplot(fill = "lightblue") +
+            labs(x = "Group", y = "Counts")
+  return(ano_plot)
+}
+
+#graph_data()
+
+
+# Global Variables ----------------------
+n <- 36 # sample size for each group
+
+# Program Body --------------------------
+
+d_frame <- create_dataset(n = n)
+
+p_val <- run_stats(data = d_frame, n = n)
+
+boxplot <- graph_data(data = d_frame) # create boxplot
+
+print(boxplot) # print boxplot
+print(p_val) # print p-value
+```
+
+___
+**2. Once your code is up and working, modify your program do something else: record a new summary variable, code a new statistical analysis, or create a different set of random variables or output graph. Do not rewrite any of your existing functions. Instead, copy them, rename them, and then modify them to do new things. Once your new functions are written, add some more lines of program code, calling a mixture of your previous functions and your new functions to get the job done.**
+
+The one-way ANOVA determines whether rotifer counts for at least one group are different than rotifer counts in another group, but does not determine which group(s) have statistically different counts. 
+
+I modified my *run_stats* function to run a post-hoc Tukey HSD test to compare all four groups to each other, i.e. test for significance for all possible comparisons of two groups.
+
+
+```{r}
+# Description ---------------------------
+# Simulations of a rotifer count data set, ANOVA analysis, and post-hoc tests
+# 23 March 2022
+# AGS
+
+# Initialize ----------------------------
+library(tidyverse)
+set.seed(100)
+
+# Create and Load Functions ------------------------
+
+################################
+# FUNCTION: create_dataset
+# purpose: create a simulated data frame of rotifer counts for the four lake groups
+# input: n (sample size)
+# output: data frame
+# ------------------------------
+create_dataset <- function(n = sample(20:80, 1)) {
+  
+  # create data frame
+  d_frame <- data.frame(group1 = rnorm(n = n, mean = 300, sd = 50), # simulate count data, group 1
+                        group2 = rnorm(n = n, mean = 250, sd = 20), # simulate count data, group 2
+                        group3 = rnorm(n = n, mean = 455, sd = 65), # simulate count data, group 3
+                        group4 = rnorm(n = n, mean = 511, sd = 20)) # simulate count data, group 4
+  
+  d_frame <- d_frame %>% pivot_longer(cols = group1:group4, # make the data frame longer
+                                      names_to = "group",
+                                      values_to = "counts")
+  return(d_frame)
+}
+
+#create_dataset()
+
+################################
+# FUNCTION: run_stats
+# purpose: run one-way ANOVA analysis and post-hoc Tukey HSD test
+# input: data frame of rotifer counts for the four lake groups, and n
+# output: p value from one-way ANOVA, Tukey HSD results, Tukey figure
+# ------------------------------
+run_stats <- function(data = NULL, n = sample(20:80, 1)) {
+  if(is.null(data)) {
+    d_frame <- data.frame(group = rep(c("group1", "group2", "group3", "group4"), each = n), 
+                          counts = runif(4*n, min=200, max=600))
+  }
+
+  ano_model <- aov(counts~group, data = d_frame)
+  z <- summary(ano_model) # model output
+  ano_stats <- list(f_pval <- unlist(z)[9])
+  
+  tukey <- TukeyHSD(ano_model) # run Tukey HSD test
+  flat_out <- unlist(tukey) # unlist
+  
+  return(c(ano_stats, tukey, plot(tukey))) # return p val, tukey results, and tukey figure
+}
+
+#run_stats()
+
+################################
+# FUNCTION: graph_data
+# purpose: create a boxplot of the rotifer counts in the four groups
+# input: data frame of rotifer counts for the four lake groups, and n
+# output: boxplot of rotifer counts for the four lake groups
+# ------------------------------
+graph_data <- function(data = NULL, n = sample(20:80, 1)) {
+  if(is.null(data)) {
+    d_frame <- data.frame(group = rep(c("group1", "group2", "group3", "group4"), each = n), 
+                          counts = runif(4*n, min=200, max=600))
+  }
+  
+  ano_plot <- ggplot(data = d_frame) +
+            aes(x = group, y = counts) +
+            geom_boxplot(fill = "lightblue") +
+            labs(x = "Group", y = "Counts")
+  return(ano_plot)
+}
+
+#graph_data()
+
+# Global Variables ----------------------
+n <- 36 # sample size for each group
+
+# Program Body --------------------------
+
+d_frame <- create_dataset(n = n)
+
+stats <- run_stats(data = d_frame, n = n)
+
+boxplot <- graph_data(data = d_frame) # create boxplot
+
+print(boxplot) # print boxplot
+print(stats[1]) # print p-value from ANOVA
+print(stats[2]) # print Tukey HSD results
+
+```
+
+___
+**3. Optional. If time permits and you have the skills, try putting your program inside of a for loop and repeat the analysis with a different stochastic data set (each time you call a function that invokes the random number generator, it will create a new set of data for you to process). Can you create a data structure to store the summary statistics created in each pass through the loop? If not, your program will work, but it will only show the results from the final replicate (the previous results will be written over each time you traverse the loop).**
+
+___
+[Back to Home Page](index.html)
