@@ -15,17 +15,16 @@ ___
 **1. Use the code that you worked on in Homework #8 (creating fake data sets), and re-organize it following the principles of structured programming. Do all the work in a single chunk in your R markdown file, just as if you were writing a single R script. Start with all of your annotated functions, preliminary calls, and global variables. The program body should be only a few lines of code that call the appropriate functions and run them in the correct order. Make sure that the output from one function serves as the input to the next. You can either daisy-chain the functions or write separate lines of code to hold elements in temporary variables and pass the along.**
 
 ```{r}
-# Description ---------------------------
+# Description -----------------------------------------------------
 # Simulations of a rotifer count data set and ANOVA analysis
 # 23 March 2022
 # AGS
 
-# Initialize ----------------------------
+# Initialize -----------------------------------------------------
 library(tidyverse)
-library(multcomp)
 set.seed(100)
 
-# Create and Load Functions ------------------------
+# Create and Load Functions -----------------------------------------------------
 
 ################################
 # FUNCTION: create_dataset
@@ -62,13 +61,15 @@ run_stats <- function(data = NULL, n = sample(20:80, 1)) {
                           counts = runif(4*n, min=200, max=600))
   }
 
-  ano_model <- aov(counts~group, data = d_frame)
+  ano_model <- aov(counts~group, data = d_frame) # run anova
   z <- summary(ano_model) # model output
-  ano_stats <- list(f_pval <- unlist(z)[9])
+  ano_stats <- list(f_pval <- unlist(z)[9]) # pull out p value
+  
   return(ano_stats)
 }
 
 #run_stats()
+
 
 ################################
 # FUNCTION: graph_data
@@ -82,29 +83,31 @@ graph_data <- function(data = NULL, n = sample(20:80, 1)) {
                           counts = runif(4*n, min=200, max=600))
   }
   
-  ano_plot <- ggplot(data = d_frame) +
+  ano_plot <- ggplot(data = d_frame) + # create boxplot
             aes(x = group, y = counts) +
             geom_boxplot(fill = "lightblue") +
             labs(x = "Group", y = "Counts")
+  
   return(ano_plot)
 }
 
 #graph_data()
 
 
-# Global Variables ----------------------
+# Global Variables -----------------------------------------------------
+
 n <- 36 # sample size for each group
 
-# Program Body --------------------------
+# Program Body -----------------------------------------------------
 
-d_frame <- create_dataset(n = n)
+d_frame <- create_dataset(n = n) # create data frame
 
-p_val <- run_stats(data = d_frame, n = n)
+p_val <- run_stats(data = d_frame, n = n) # run statistical tests
 
 boxplot <- graph_data(data = d_frame) # create boxplot
 
 print(boxplot) # print boxplot
-print(p_val) # print p-value
+print(p_val) # print p-value from ANOVA
 ```
 
 ___
@@ -112,20 +115,21 @@ ___
 
 The one-way ANOVA determines whether rotifer counts for at least one group are different than rotifer counts in another group, but does not determine which group(s) have statistically different counts. 
 
-I modified my *run_stats* function to run a post-hoc Tukey HSD test to compare all four groups to each other, i.e. test for significance for all possible comparisons of two groups.
+I modified my *run_stats* function to run a post-hoc Tukey HSD test to compare all four groups to each other, i.e. test for significance for all possible comparisons of two groups. Now, the *run_stats* function reports the p-value from the one-way ANOVA, as well as the Tukey HSD results and a figure showing the results of the Tukey HSD test.
 
+An additional change that I made to this iteration of the script is that I added the raw data points to my boxplot of the rotifer counts in the four groups. I made this change in the *graph_data* function when I was plotting the boxplot in ggplot.
 
 ```{r}
-# Description ---------------------------
+# Description -----------------------------------------------------
 # Simulations of a rotifer count data set, ANOVA analysis, and post-hoc tests
 # 23 March 2022
 # AGS
 
-# Initialize ----------------------------
+# Initialize -----------------------------------------------------
 library(tidyverse)
 set.seed(100)
 
-# Create and Load Functions ------------------------
+# Create and Load Functions -----------------------------------------------------
 
 ################################
 # FUNCTION: create_dataset
@@ -149,6 +153,7 @@ create_dataset <- function(n = sample(20:80, 1)) {
 
 #create_dataset()
 
+
 ################################
 # FUNCTION: run_stats
 # purpose: run one-way ANOVA analysis and post-hoc Tukey HSD test
@@ -161,9 +166,9 @@ run_stats <- function(data = NULL, n = sample(20:80, 1)) {
                           counts = runif(4*n, min=200, max=600))
   }
 
-  ano_model <- aov(counts~group, data = d_frame)
+  ano_model <- aov(counts~group, data = d_frame) # run anova
   z <- summary(ano_model) # model output
-  ano_stats <- list(f_pval <- unlist(z)[9])
+  ano_stats <- list(f_pval <- unlist(z)[9]) # pull out p value
   
   tukey <- TukeyHSD(ano_model) # run Tukey HSD test
   flat_out <- unlist(tukey) # unlist
@@ -172,6 +177,7 @@ run_stats <- function(data = NULL, n = sample(20:80, 1)) {
 }
 
 #run_stats()
+
 
 ################################
 # FUNCTION: graph_data
@@ -185,34 +191,41 @@ graph_data <- function(data = NULL, n = sample(20:80, 1)) {
                           counts = runif(4*n, min=200, max=600))
   }
   
-  ano_plot <- ggplot(data = d_frame) +
+  ano_plot <- ggplot(data = d_frame) + # create boxplot
             aes(x = group, y = counts) +
-            geom_boxplot(fill = "lightblue") +
-            labs(x = "Group", y = "Counts")
+            geom_boxplot(fill = "lightblue", outlier.shape = NA) +
+            geom_jitter(width = 0.2, colour = "darkslateblue", alpha = 0.5) + # add the raw data points
+            labs(x = "Group", y = "Counts") 
+  
   return(ano_plot)
 }
 
 #graph_data()
 
-# Global Variables ----------------------
+
+# Global Variables -----------------------------------------------------
+
 n <- 36 # sample size for each group
 
-# Program Body --------------------------
+# Program Body -----------------------------------------------------
 
-d_frame <- create_dataset(n = n)
+d_frame <- create_dataset(n = n) # create data frame
 
-stats <- run_stats(data = d_frame, n = n)
+stats <- run_stats(data = d_frame, n = n) # run statistical tests
 
 boxplot <- graph_data(data = d_frame) # create boxplot
 
 print(boxplot) # print boxplot
 print(stats[1]) # print p-value from ANOVA
 print(stats[2]) # print Tukey HSD results
-
 ```
+
+In the Tukey HSD graph, we can see that the confidence intervals do not cross the line at zero. This shows that all groups are significantly different from each other.
 
 ___
 **3. Optional. If time permits and you have the skills, try putting your program inside of a for loop and repeat the analysis with a different stochastic data set (each time you call a function that invokes the random number generator, it will create a new set of data for you to process). Can you create a data structure to store the summary statistics created in each pass through the loop? If not, your program will work, but it will only show the results from the final replicate (the previous results will be written over each time you traverse the loop).**
+
+Try to do after we learn for loops in lecture!
 
 ___
 [Back to Home Page](index.html)

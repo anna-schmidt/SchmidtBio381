@@ -1,0 +1,180 @@
+---
+title: "Homework 10"
+author: "Anna Schmidt"
+date: "3/30/2022"
+output: 
+  html_document: 
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+___
+**1. Using a `for` loop, write a function to calculate the number of zeroes in a numeric vector. Before entering the loop, set up a counter variable `counter <- 0`. Inside the loop, add 1 to `counter` each time you have a zero in the vector. Finally, use `return(counter)` for the output.**
+
+```{r}
+################################
+# FUNCTION: calculate_zeroes
+# purpose: calculate the number of zeroes in a numeric vector
+# input: vec = numeric vector
+# output: counter = number of zeroes in the numeric vector
+# ------------------------------
+
+calculate_zeroes <- function(vec = c(0, 0, 5, 1)) {
+  counter <- 0
+  for (i in 1:length(vec)) {
+    if (vec[i] == 0) counter <- counter + 1
+    } # end of for loop
+  return(counter)
+} # end of function
+
+calculate_zeroes() # test defaults, counter should = 2
+
+calculate_zeroes(c(0, 10, 25, 0, 0, 0)) # test a different vector, counter should = 4
+```
+
+___
+**2. Use subsetting instead of a loop to rewrite the function as a single line of code.**
+
+```{r}
+vec <- c(0, 0, 5, 1)
+
+length(which(vec == 0))
+```
+
+___
+**3. Write a function that takes as input two integers representing the number of rows and columns in a matrix. The output is a matrix of these dimensions in which each element is the product of the row number x the column number.**
+
+```{r}
+################################
+# FUNCTION: matrix_products
+# purpose: create a matrix in which each element is the product of its row# x column#
+# input: nrow = integer representing the number of rows in a matrix
+#        ncol = integer representing the number of columns in a matrix
+# output: m = matrix of dimension(nrow,ncol)
+# ------------------------------
+
+matrix_products <- function(nrow = 3,
+                            ncol = 4) {
+  m <- matrix(runif(nrow*ncol), nrow = nrow) # create matrix with random values
+  
+  # double for loop to loop over rows and columns
+  for (i in 1:nrow(m)) { # loop over rows
+    for (j in 1:ncol(m)) { # loop over columns
+      m[i,j] <- i*j
+      } # end of column loop
+    } # end of row loop
+  
+  return(m)
+  
+} # end of function
+
+matrix_products() # test defaults
+
+matrix_products(nrow = 5, ncol = 6) # test with different inputs
+```
+
+___
+**4. In the next few lectures, you will learn how to do a randomization test on your data. We will complete some of the steps today to practice calling custom functions within a for loop. Use the code from the March 31st lecture (Randomization Tests) to complete the following steps:**
+
+**a. Simulate a dataset with 3 groups of data, each group drawn from a distribution with a different mean. The final data frame should have 1 column for group and 1 column for the response variable.**
+```{r}
+library(tidyverse)
+
+# Create random numbers for three groups of data
+control <- rnorm(n = 10, mean = 10, sd = 10)     # mean = 10
+treatmentA <- rnorm(n = 10, mean = 60, sd = 10)  # mean = 60
+treatmentB <- rnorm(n = 10, mean = 85, sd = 10)  # mean = 85
+
+# Create data frame
+d_frame <- data.frame(control, treatmentA, treatmentB)
+
+# Make the data frame longer
+d_frame <- d_frame %>%
+  pivot_longer(cols = control:treatmentB,
+               names_to = "group",
+               values_to = "response_var")
+head(d_frame)
+```
+
+**b. Write a custom function that 1) reshuffles the response variable, and 2) calculates the mean of each group in the reshuffled data. Store the means in a vector of length 3.**
+```{r}
+################################
+# FUNCTION: randomization_test
+# purpose: reshuffle the response variable and calculate the mean of each group in the reshuffled data
+# input: df = data frame with "response_var" and "group" columns
+# output: means = vector of length 3, containing the means of each group
+# ------------------------------
+
+randomization_test <- function(df = NULL) {
+  if(is.null(df)) {
+    df <- data.frame(group = rep(c("control", "treatmentA", "treatmentB"), each = 10),
+                     response_var = runif(30, min = 0, max = 100))
+  }
+  
+  # reshuffle the response variable
+  df$response_var <- sample(df$response_var)
+  
+  # calculate the mean of each group in the reshuffled data, and store the means in a vector of length 3
+  means <- tapply(df$response_var, df$group, mean)
+  return(means)
+  
+}
+
+randomization_test() # test defaults
+
+randomization_test(df = d_frame) # test with our data frame
+```
+
+**c. Use a for loop to repeat the function in b 100 times. Store the results in a data frame that has 1 column indicating the replicate number and 1 column for each new group mean, for a total of 4 columns.**
+```{r}
+# Create empty data frame with all NAs
+results <- data.frame(replicate = rep(NA,100), 
+                      means_control = rep(NA,100), 
+                      means_treatmentA = rep(NA,100), 
+                      means_treatmentB = rep(NA,100))
+
+# For loop to repeat randomization_test() 100 times
+for (i in 1:100) {
+  means <- randomization_test(df = d_frame) # run randomization_test() function
+  
+  results$replicate[i] <- i # fill in replicate column
+  
+  results$means_control[i] <- means["control"] # fill in means_control column
+  results$means_treatmentA[i] <- means["treatmentA"] # fill in means_treatmentA column
+  results$means_treatmentB[i] <- means["treatmentB"] # fill in means_treatmentB column
+}
+
+head(results)
+```
+
+**d. Use qplot() to create a histogram of the means for each reshuffled group. Or, if you want a challenge, use ggplot() to overlay all 3 histograms in the same figure. How do the distributions of reshuffled means compare to the original means?**
+```{r}
+# First, make the data frame longer
+results_long <- results %>%
+  pivot_longer(cols = means_control:means_treatmentB,
+               names_to = "group",
+               values_to = "means")
+
+head(results_long)
+
+# all on the same plot
+ggplot(data = results_long, 
+       mapping = aes(x = means, fill = group, color = group)) +
+  geom_histogram(position = "dodge", alpha = 0.3) +
+  theme(legend.position="top")
+
+# faceted
+ggplot(data = results_long, 
+       mapping = aes(x = means)) +
+  geom_histogram(fill = "lightblue", col = "white", position = "dodge") +
+  theme(legend.position="top") +
+  facet_wrap(~group, nrow = 3)
+```
+
+The distributions of reshuffled means for the control, treatmentA, and treatmentB groups all look relatively similar, and they are all centered around a mean of 55. It makes sense that these distributions all look similar since the response variables were randomly shuffled in the randomization_test function. Since the original means were control = 10, treatmentA = 60, and treatmentB = 85, the fact that these distributions are centered around 55 makes sense, since that is centered in the context of to the original means. 
+
+___
+[Back to Home Page](index.html)
