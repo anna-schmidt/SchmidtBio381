@@ -23,11 +23,11 @@ ___
 # ------------------------------
 
 calculate_zeroes <- function(vec = c(0, 0, 5, 1)) {
-  counter <- 0
+  counter <- 0 # set up counter variable
   for (i in 1:length(vec)) {
     if (vec[i] == 0) counter <- counter + 1
     } # end of for loop
-  return(counter)
+  return(counter) # output
 } # end of function
 
 calculate_zeroes() # test defaults, counter should = 2
@@ -41,7 +41,7 @@ ___
 ```{r}
 vec <- c(0, 0, 5, 1)
 
-length(which(vec == 0))
+length(which(vec == 0)) # should = 2
 ```
 
 ___
@@ -80,6 +80,7 @@ ___
 **4. In the next few lectures, you will learn how to do a randomization test on your data. We will complete some of the steps today to practice calling custom functions within a for loop. Use the code from the March 31st lecture (Randomization Tests) to complete the following steps:**
 
 **a. Simulate a dataset with 3 groups of data, each group drawn from a distribution with a different mean. The final data frame should have 1 column for group and 1 column for the response variable.**
+
 ```{r}
 library(tidyverse)
 
@@ -100,6 +101,7 @@ head(d_frame)
 ```
 
 **b. Write a custom function that 1) reshuffles the response variable, and 2) calculates the mean of each group in the reshuffled data. Store the means in a vector of length 3.**
+
 ```{r}
 ################################
 # FUNCTION: randomization_test
@@ -111,7 +113,7 @@ head(d_frame)
 randomization_test <- function(df = NULL) {
   if(is.null(df)) {
     df <- data.frame(group = rep(c("control", "treatmentA", "treatmentB"), each = 10),
-                     response_var = runif(30, min = 0, max = 100))
+                     response_var = runif(30, min = 0, max = 200))
   }
   
   # reshuffle the response variable
@@ -121,7 +123,7 @@ randomization_test <- function(df = NULL) {
   means <- tapply(df$response_var, df$group, mean)
   return(means)
   
-}
+} # end of function
 
 randomization_test() # test defaults
 
@@ -129,6 +131,7 @@ randomization_test(df = d_frame) # test with our data frame
 ```
 
 **c. Use a for loop to repeat the function in b 100 times. Store the results in a data frame that has 1 column indicating the replicate number and 1 column for each new group mean, for a total of 4 columns.**
+
 ```{r}
 # Create empty data frame with all NAs
 results <- data.frame(replicate = rep(NA,100), 
@@ -145,12 +148,14 @@ for (i in 1:100) {
   results$means_control[i] <- means["control"] # fill in means_control column
   results$means_treatmentA[i] <- means["treatmentA"] # fill in means_treatmentA column
   results$means_treatmentB[i] <- means["treatmentB"] # fill in means_treatmentB column
-}
+  
+} # end of for loop
 
 head(results)
 ```
 
 **d. Use qplot() to create a histogram of the means for each reshuffled group. Or, if you want a challenge, use ggplot() to overlay all 3 histograms in the same figure. How do the distributions of reshuffled means compare to the original means?**
+
 ```{r}
 # First, make the data frame longer
 results_long <- results %>%
@@ -162,19 +167,19 @@ head(results_long)
 
 # all on the same plot
 ggplot(data = results_long, 
-       mapping = aes(x = means, fill = group, color = group)) +
-  geom_histogram(position = "dodge", alpha = 0.3) +
+       aes(x = means, fill = group, color = group)) +
+  geom_histogram(position = "dodge", alpha = 0.2) +
   theme(legend.position="top")
 
 # faceted
 ggplot(data = results_long, 
-       mapping = aes(x = means)) +
+       aes(x = means)) +
   geom_histogram(fill = "lightblue", col = "white", position = "dodge") +
   theme(legend.position="top") +
   facet_wrap(~group, nrow = 3)
 ```
 
-The distributions of reshuffled means for the control, treatmentA, and treatmentB groups all look relatively similar, and they are all centered around a mean of 55. It makes sense that these distributions all look similar since the response variables were randomly shuffled in the randomization_test function. Since the original means were control = 10, treatmentA = 60, and treatmentB = 85, the fact that these distributions are centered around 55 makes sense, since that is centered in the context of to the original means. 
+The distributions of reshuffled means for the control, treatmentA, and treatmentB groups all look relatively similar, and they are all centered around a mean of 55. It makes sense that these distributions all look similar since the response variables were randomly shuffled in the randomization_test() function. Since the original means were control = 10, treatmentA = 60, and treatmentB = 85, the fact that these distributions are centered around 55 makes sense, since that is centered in the context of the original means. 
 
 ___
 [Back to Home Page](index.html)
