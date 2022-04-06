@@ -1,0 +1,123 @@
+---
+title: "Homework 11"
+author: "Anna Schmidt"
+date: "4/06/2022"
+output: 
+  html_document: 
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+___
+**1. Repeat the exercise from the Batch Processing Lecture (5 April), but do it using real data sets rather than purely simulated. Check with folks in your lab to see if there are multiple data sets available for analysis, or ask Nick, Lauren, or Emily for suggestions for other data sources. Stick to simple data analyses and graphics, but try to set it up as a batch process that will work on multiple files and save summary results to a common file.**
+
+For this Homework, I am working with 18 .csv files containing zooplankton length data. Each .csv file contains data from a different sample, and I am going to use batch processing to calculate the same summary statistics for each sample (mean length and sd length), and then save these summary statistics to an output summary file.
+
+```{r}
+# Function to get summary statistics from each of the individual files (mean and sd of zooplankton lengths)
+
+################################
+# FUNCTION: length_stats
+# purpose: extract mean and sd of zooplankton lengths
+# input: data frame with columns "sampleID" and "length_mm"
+# output: list containing mean length and sd length for that sample
+# ------------------------------
+length_stats <- function(d = NULL) {
+  
+  if(is.null(d)) { # create fake data set for no inputs to the function
+    sampleID <- rep(sample.int(40,1), times = 20)
+    length_mm <- runif(20, min = 0.1, max = 0.4)
+    d <- data.frame(sampleID, length_mm)
+  }
+  
+  stats_list <- list(mean_length <- mean(d$length_mm), # calculate mean length
+                     sd_length <- sd(d$length_mm))     # calculate sd length
+                
+  return(stats_list)
+}
+
+#length_stats() # test length_stats function
+
+# Batch processing
+
+set.seed(2000)
+
+# Global variables
+file_folder <- "FOAMZ_2019_zoop/" # folder where the .csv files are in my R project
+n_files <- 18 # number of files
+file_out <- "LengthSummary.csv" # output summary file
+
+# Grab the file names
+file_names <- list.files(path = file_folder)
+head(file_names)
+
+# Create a data frame to hold summary file statistics
+ID <- seq_along(file_names)
+file_name <- file_names
+mean_length <- rep(NA, length(file_names))
+sd_length <- rep(NA, length(file_names))
+stats_out <- data.frame(ID, file_name, mean_length, sd_length) # create stats_out
+head(stats_out)
+
+# Batch process by looping through the individual files
+
+for (i in seq_along(file_names)) {
+  data <- read.table(file = paste(file_folder,
+                                  file_names[i],
+                                  sep = ""),
+                     sep = ",",
+                     header = TRUE)
+
+  . <- length_stats(data) # pull out length stats
+  
+  stats_out[i,3:4] <- unlist(.) # working with columns 3 to 4 (mean_length and sd_length) - unlist, copy into last two columns of stats_out
+
+} # end of for loop
+
+# Set up output file and incorporate a time stamp and minimal metadata
+write.table(cat("# Summary stats for",
+                "batch processing of zooplankton length data", "\n",
+                "# timestamp: ",
+                as.character(Sys.time()), "\n",
+                file = file_out, # what we are going to call this final file
+                row.names = "",
+                col.names = "",
+                sep = ""))
+
+# Now, add the data frame
+write.table(x = stats_out,
+            file = file_out,
+            row.names = FALSE,
+            col.names = TRUE,
+            sep = ",",
+            append = TRUE)
+```
+
+Taking a look at the output summary: 
+
+```{r}
+print(stats_out)
+```
+
+Our output summary, which we also made into a .csv file called "LengthSummary.csv" in the previous steps, contains columns for ID, file_name, mean_length, and sd_length. Now that we have the mean and sd lengths for each of the samples (each of the original .csv files), we can plot summaries of the data using the stats_out data frame. With this script, it will be easy to add/remove/change the input files and re-create the output summary file.
+
+```{r}
+# Create bar graph of mean and sd lengths for each sample
+
+library(ggplot2)
+
+ggplot(stats_out, aes(x = ID, y = mean_length)) +
+  geom_bar(stat = "identity", color = "white", fill = "lightblue") +
+  geom_errorbar(aes(ymin = mean_length - sd_length,
+                    ymax = mean_length + sd_length),
+                width = 0.2, color = "darkgrey") +
+  labs(title = "Zooplankton lengths in each sample",
+       x = "ID",
+       y = "Zooplankgon mean length (mm)")
+```
+
+___
+[Back to Home Page](index.html)

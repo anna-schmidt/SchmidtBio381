@@ -82,6 +82,7 @@ ___
 **a. Simulate a dataset with 3 groups of data, each group drawn from a distribution with a different mean. The final data frame should have 1 column for group and 1 column for the response variable.**
 
 ```{r}
+set.seed(2000)
 library(tidyverse)
 
 # Create random numbers for three groups of data
@@ -180,6 +181,23 @@ ggplot(data = results_long,
 ```
 
 The distributions of reshuffled means for the control, treatmentA, and treatmentB groups all look relatively similar, and they are all centered around a mean of 55. It makes sense that these distributions all look similar since the response variables were randomly shuffled in the randomization_test() function. Since the original means were control = 10, treatmentA = 60, and treatmentB = 85, the fact that these distributions are centered around 55 makes sense, since that is centered in the context of the original means. 
+
+___
+**5. For comparison, calculate in R the standard statistical analysis you would use with these data. How does the p-value compare for the standard test versus the p value you estimated from your randomization test? If the p values seem very different, run the program again with a different starting seed (and/or increase the number of replications in your randomization test). If there are persistent differences in the p value of the standard test versus your randomization, what do you think is responsible for this difference?**
+
+Here, I am going to recreate the histogram of simulated means, and add the observed means as vertical lines.
+```{r}
+ggplot(data = results_long, 
+       aes(x = means, fill = group, color = group)) +
+  geom_histogram(position = "dodge", alpha = 0.2) +
+  theme(legend.position="top") +
+  geom_vline(aes(xintercept = 10), col = "red") +    # add control mean line
+  geom_vline(aes(xintercept = 60), col = "green") +  # add treatmentA mean line
+  geom_vline(aes(xintercept = 85), col = "blue")     # add treatmentB mean line
+
+```
+
+Looking at this histogram with the observed means added, we can see that the histogram lies between the control mean and treatmentB mean, and overlaps with the treatmentA mean. Within the histogram itself, the simulated means of the three groups overlap each other quite a lot, which makes sense because the values were shuffled for the randomization. The histograms are not covering the actual observed means for the control and treatmentB groups. This indicates that these observed means would rarely happen by chance if the null hypothesis was true (no statistically significant difference between the groups). Thus, the means for the three groups are likely significantly different from one another.
 
 ___
 [Back to Home Page](index.html)
