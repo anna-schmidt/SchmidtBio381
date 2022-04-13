@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ___
 **1. Think about an ongoing study in your lab (or a paper you have read in a different class), and decide on a pattern that you might expect in your experiment if a specific hypothesis were true.**
 
-The data that I am going to simulate are count data of rotifers (small microscopic animals) on a 1 mL microscope slide. These samples were collected from experimental ponds, where different treatments are applied (two fish treatments and two nutrient treatments) in order to examine impacts of food web structure and oxygen regime on food web interactions and zooplankton migration. In this assignment, I am simulating count data for samples collected from the four treatment groups, and analyzing whether counts significantly differ between treatments. We hypothesize that treatment will significantly impact rotifer counts due to food web changes.
+The data that I am going to simulate are count data of rotifers (small microscopic animals) on a 1 mL microscope slide. These samples were collected from experimental ponds, where different treatments are applied (two fish treatments and two nutrient treatments) to examine impacts of food web structure and oxygen regime on food web interactions and zooplankton migration. In this assignment, I am simulating count data for samples collected from the four treatment groups, and analyzing whether counts significantly differ between treatments. We hypothesize that treatment will significantly impact rotifer counts due to food web changes.
 
 ___
 **2. To start simply, assume that the data in each of your treatment groups follow a normal distribution. Specify the sample sizes, means, and variances for each group that would be reasonable if your hypothesis were true. You may need to consult some previous literature and/or an expert in the field to come up with these numbers.**
@@ -91,7 +91,7 @@ ano_model <- aov(counts~group, data = d_frame)
 
 z <- summary(ano_model) # model output
 print(z) 
-flat_out <- unlist(z)
+flat_out <- unlist(z) # unlist
 ano_stats <- list(f_ratio <- unlist(z)[7], f_pval <- unlist(z)[9])
 print(ano_stats)
 
@@ -125,7 +125,7 @@ d_frame <- d_frame %>%
 # One-way ANOVA analysis
 ano_model <- aov(counts~group, data = d_frame)
 z <- summary(ano_model) # model output
-flat_out <- unlist(z)
+flat_out <- unlist(z) # unlist
 ano_stats <- list(f_ratio <- unlist(z)[7], f_pval <- unlist(z)[9])
 print(ano_stats)
 ```
@@ -151,7 +151,7 @@ d_frame <- d_frame %>%
 # One-way ANOVA analysis
 ano_model <- aov(counts~group, data = d_frame)
 z <- summary(ano_model) # model output
-flat_out <- unlist(z)
+flat_out <- unlist(z) # unlist
 ano_stats <- list(f_ratio <- unlist(z)[7], f_pval <- unlist(z)[9])
 print(ano_stats)
 ```
@@ -202,7 +202,7 @@ d_frame <- d_frame %>%
 # One-way ANOVA analysis
 ano_model <- aov(counts~group, data = d_frame)
 z <- summary(ano_model) # model output
-flat_out <- unlist(z)
+flat_out <- unlist(z) # unlist
 ano_stats <- list(f_ratio <- unlist(z)[7], f_pval <- unlist(z)[9])
 print(ano_stats)
 
@@ -213,7 +213,7 @@ ano_plot <- ggplot(d_frame) +
 print(ano_plot)
 ```
 
-Running this simulation (using the gamma distribution) 10 times resulted in significant p-values each time, indicating that there were significant differences between the rotifer counts according to group.
+Running this simulation (using the gamma distribution) 10 times resulted in significant p-values each time, indicating that there were significant differences between the rotifer counts according to group/lake treatment.
 
 ___
 [Back to Home Page](index.html)
