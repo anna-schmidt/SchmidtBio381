@@ -1,0 +1,185 @@
+---
+title: "Homework 12"
+author: "Anna Schmidt"
+date: "4/13/2022"
+output: 
+  html_document: 
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+___
+**1. For this exercise, use your newly-developed ggplot chops to create some nice graphs from your own data (If you do not have a good data frame to use for graphics, use one of the many built-in data frames from R (other than mpg, which we are using in class)). Experiment with different themes, theme base sizes, aesthetics, mappings, and faceting. When you are finished, try exporting them to high quality pdfs, jpgs, eps files, or other formats that you would use for submission to a journal.**
+
+(In this exercise, I encourage you to improve your graphics with elements that we have not (yet) covered in ggplot. For example, can you change the labels on a facet plot so that they are more informative than the variable names that are supplied from your data frame? Can you figure out how to add text annotations, lines and arrows to your graph? Can you figure out how to use custom colors that you have chosen for your fills and lines? Your resources for these explorations are google, Stack Overflow – and your TAs!)
+
+I am going to be making some ggplot figures from some data I have been analyzing showing zooplankton biomass across 16 experimental ponds that we sampled.
+
+___
+##### Part I: Zooplankton biomass across lakes
+
+The first graph I am going to create is a faceted stacked bar plot that summarizes the zooplankton biomass data that we have for each lake, habitat, and time of day that we sampled. I am going to bring in this data from an R object that I created from a data frame in my data analysis script for this project.
+
+```{r}
+# Load packages
+library(ggplot2)
+
+# Bring in the R object
+
+my_data <- readRDS(file = "my_data.rds")
+
+# Plot zooplankton biomass, faceted by lake, stacked bars representing each habitat sampled in each lake
+
+p1 <- ggplot(my_data, aes(x = time.of.day, 
+                          y = total.biomass, 
+                          fill = habitat)) +
+  geom_bar(stat="identity") +
+  facet_wrap(vars(pondID)) + # facet by pondID
+  labs(x = "Time of day", # x axis label
+       y = "Total zooplankton biomass (ug/L)", # y axis label
+       fill = "Habitat") + # legend label
+  scale_fill_manual(values = c('EP' = "#067B67", 
+                               'HP' = "#8DADD6", 
+                               'IL' = "#87648C", 
+                               'OL' = "#EDCCEF"),
+                    labels = c('Epilimnion', # change EP to Epilimnion in legend
+                               'Hypolimnion', # change HP to Hypolimnion in legend
+                               'Inner littoral', # change IL to Inner littoral in legend
+                               'Outer littoral')) + # change OL to Outer littoral in legend
+  theme_bw() +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank()) +
+  scale_x_discrete(labels = c("D" = "Day","N" = "Night")) + # change D and N to Day and Night in x-axis
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=16,face="bold"),
+        legend.text=element_text(size=12),
+        legend.title=element_text(size=16, face="bold"))
+
+print(p1)
+
+# Export to a pdf and save to my R project
+ggsave(plot = p1, 
+       filename = "ZooplanktonBiomass.pdf",
+       width = 10, height = 8, units = "in", device = "pdf")
+```
+
+___
+##### Part II: Drivers of zooplankton migration
+
+The second graph I am going to create is a scatterplot with a linear regression investigating drivers of vertical migration of zooplankton. The x-axis (explanatory variable) will be either a gradient of planktivory or a gradient of oxygen conditions, and the y-axis (response variable) will be a metric for vertical migration of zooplankton. I will be looking for linear trends between these variables using linear regressions. As above, I am going to bring in this data from an R object that I created from a data frame in my data analysis script for this project.
+
+```{r}
+# Bring in the R object
+
+migration <- readRDS(file = "migration_drivers.rds")
+```
+
+```{r}
+# Plot the impacts of oxygen gradient on vertical migration metric
+
+p2 <- ggplot(migration, aes(x = avg_do_mgL, 
+                            y = proportion_nminusd)) +
+  geom_point(size=2) + 
+  stat_smooth(method = lm, color = "#87648C") + # add linear regression line and shaded CI
+  labs(x = "Average DO in hypolimnion (mg/L)",  # x axis label
+       y = "Proportion in epilimnion night vs. day") + # y axis label
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold")) 
+
+print(p2)
+
+# Export to a pdf and save to my R project
+ggsave(plot = p2, filename = "Oxygen_vs_DVM.pdf",
+       width = 10, height = 8, units = "in", device = "pdf")
+```
+
+```{r}
+# Plot the impacts of planktivory gradient on vertical migration metric
+
+p3 <- ggplot(migration, aes(x = nfish, 
+                            y = proportion_nminusd,)) +
+  geom_point(size=2) + 
+  stat_smooth(method=lm, color = "#87648C") + # add linear regression line and shaded CI
+  labs(x = "Number of planktivorous fish",  # x axis label
+       y = "Proportion in epilimnion night vs. day", ) + # y axis label
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"))
+
+print(p3)
+
+# Export to a pdf and save to my R project
+ggsave(plot = p3, filename = "Planktivory_vs_DVM.pdf",
+       width = 10, height = 8, units = "in", device = "pdf")
+```
+
+```{r}
+# There is a large outlier for Lake 14, which had significantly more planktivorous fish than all of the other lakes. In order to look at the overall trend without this point biasing things, I am going to remove that point for our further analysis. 
+
+migration_subset <- subset(migration, pondID!="14") # remove lake 14 from the data frame
+
+p4 <- ggplot(migration_subset, aes(x = nfish, 
+                                   y = proportion_nminusd,)) +
+  geom_point(size=2) + 
+  stat_smooth(method=lm, color = "#87648C") + # add linear regression line and shaded CI
+  labs(x = "Number of planktivorous fish",  # x axis label
+       y = "Proportion in epilimnion night vs. day", ) + # y axis label
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"))
+
+print(p4)
+
+# Export to a pdf and save to my R project
+ggsave(plot = p4, filename = "Planktivory_vs_DVM_nolake14.pdf",
+       width = 10, height = 8, units = "in", device = "pdf")
+```
+
+Since I am investigating whether linear trends exist between these variables using linear regressions, I want to print the R2 value and slope p-value on the graphs. 
+
+```{r}
+# Linear regression analysis: impacts of oxygen gradient on vertical migration metric
+
+regression <- lm(proportion_nminusd ~ avg_do_mgL, data = migration) # linear regression
+
+z <- unlist(summary(regression)) # unlist model summary
+
+reg_summary <- list(slopeP = z$coefficients8, # p-value
+                    R2 = z$r.squared) # multiple R-squared
+
+# Add the slope and R2 to the top left corner of p2
+p2 + annotate("text", x = 2, y = 0.35, 
+              label = paste("italic(R) ^ 2 ==", round(reg_summary$R2, 3)),
+              parse = TRUE) + 
+  annotate("text", x = 2.55, y = 0.32,
+           label = paste("Slope p-value =", round(reg_summary$slopeP, 3)))
+```
+
+```{r}
+# Linear regression analysis: impacts of planktivory gradient on vertical migration metric
+
+regression <- lm(proportion_nminusd ~ nfish, data = migration_subset) # linear regression
+
+z <- unlist(summary(regression)) # unlist model summary
+
+reg_summary <- list(slopeP = z$coefficients8, # p-value
+                    R2 = z$r.squared) # multiple R-squared
+
+# Add the slope and R2 to the top left corner of p4
+p4 + annotate("text", x = 224, y = 0.35, 
+              label = paste("italic(R) ^ 2 ==", round(reg_summary$R2, 3)),
+              parse = TRUE) + 
+  annotate("text", x = 240, y = 0.32,
+           label = paste("Slope p-value =", round(reg_summary$slopeP, 3)))
+```
+
+___
+[Back to Home Page](index.html)

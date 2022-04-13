@@ -34,3 +34,5 @@ Link to [Homework 9](Homework_09.html): Structured programming
 Link to [Homework 10](Homework_10.html): For loops and randomization tests
 
 Link to [Homework 11](Homework_11.html): Batch processing
+
+Link to [Homework 12](Homework_12.html): Advanced ggplotting
