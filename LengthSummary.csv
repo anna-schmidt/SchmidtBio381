@@ -1,5 +1,5 @@
 # Summary stats forbatch processing of zooplankton length data
-# timestamp: 2022-04-06 14:35:52
+# timestamp: 2022-04-20 10:04:44
 "ID","file_name","mean_length","sd_length"
 1,"M1_01AUG2019_N_EP_022.csv",0.318515486725664,0.130088646285634
 2,"M1_01AUG2019_N_HP_023.csv",0.387042,0.217387544552421

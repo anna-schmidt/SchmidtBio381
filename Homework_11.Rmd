@@ -40,7 +40,9 @@ length_stats <- function(d = NULL) {
 }
 
 #length_stats() # test length_stats function
+```
 
+```{r}
 # Batch processing
 
 set.seed(2000)
@@ -115,8 +117,8 @@ ggplot(stats_out, aes(x = ID, y = mean_length)) +
                     ymax = mean_length + sd_length),
                 width = 0.2, color = "darkgrey") +
   labs(title = "Zooplankton lengths in each sample",
-       x = "ID",
-       y = "Zooplankgon mean length (mm)")
+       x = "Sample ID",
+       y = "Zooplankton mean length (mm)")
 ```
 
 ___
