@@ -67,6 +67,54 @@ ggsave(plot = p1,
        width = 10, height = 8, units = "in", device = "pdf")
 ```
 
+The lakes (#1-16) are automatically positioned in increasing order in this figure. The lakes in this system are experimentally manipulated with four different treatments, with four lakes per treatment. Because of this, I wanted to sort the lakes in this figure by their treatment instead of by their ordered numbering. I want each row of lakes in this figure to contain the four lakes of a certain treatment. To do this, I first reordered the pondID column according to which treatment corresponds to each pondID, then repeated the ggplot plotting code from above.
+
+```{r}
+# Reorder lakes by treatment (first four lakes are a certain treatment, then the next four lakes are another treatment, etc.)
+my_data$pondID <- factor(my_data$pondID ,
+                         levels = c("1", "8", "11", "14",
+                                    "2", "7", "12", "13",
+                                    "3", "6", "9", "16",
+                                    "4", "5", "10", "15"))
+
+# Plot zooplankton biomass, faceted by lake, stacked bars representing each habitat sampled in each lake
+
+p1a <- ggplot(my_data, aes(x = time.of.day, 
+                          y = total.biomass, 
+                          fill = habitat)) +
+  geom_bar(stat="identity") +
+  facet_wrap(vars(pondID)) + # facet by pondID
+  labs(x = "Time of day", # x axis label
+       y = "Total zooplankton biomass (ug/L)", # y axis label
+       fill = "Habitat") + # legend label
+  scale_fill_manual(values = c('EP' = "#067B67", 
+                               'HP' = "#8DADD6", 
+                               'IL' = "#87648C", 
+                               'OL' = "#EDCCEF"),
+                    labels = c('Epilimnion', # change EP to Epilimnion in legend
+                               'Hypolimnion', # change HP to Hypolimnion in legend
+                               'Inner littoral', # change IL to Inner littoral in legend
+                               'Outer littoral')) + # change OL to Outer littoral in legend
+  theme_bw() +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank()) +
+  scale_x_discrete(labels = c("D" = "Day","N" = "Night")) + # change D and N to Day and Night in x-axis
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=16,face="bold"),
+        legend.text=element_text(size=12),
+        legend.title=element_text(size=16, face="bold"))
+
+print(p1a)
+
+# Export to a pdf and save to my R project
+ggsave(plot = p1a, 
+       filename = "ZooplanktonBiomass_treatment_rows.pdf",
+       width = 10, height = 8, units = "in", device = "pdf")
+```
+
+Now, the lakes are reordered by treatment so they can be compared more easily within and across treatments.
+
 ___
 ##### Part II: Drivers of zooplankton migration
 
@@ -179,6 +227,53 @@ p4 + annotate("text", x = 224, y = 0.35,
               parse = TRUE) + 
   annotate("text", x = 240, y = 0.32,
            label = paste("Slope p-value =", round(reg_summary$slopeP, 3)))
+```
+
+___
+##### Part III: Trying mapping in ggplot
+
+Unrelated to the data above, I wanted to learn how to create maps in R / ggplot. I got information from https://r-spatial.org/r/2018/10/25/ggplot2-sf.html, http://mbontrager.org/blog/2016/08/01/Maps-in-R, and  https://stackoverflow.com/questions/68219487/how-to-make-the-great-lakes-the-same-color-as-the-ocean-in-r which I adapt below to make some maps!
+
+```{r}
+# Load packages
+library(ggplot2)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(ggspatial)
+
+theme_set(theme_bw())
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# plot world map
+ggplot(data = world) +
+    geom_sf() +
+    xlab("Longitude") + ylab("Latitude") +
+    ggtitle("World map")
+
+# USA state outlines
+usa_states <- st_as_sf(maps::map("state", 
+                                 fill=TRUE, 
+                                 plot =FALSE),
+                       crs = 4269)
+
+# zoom in on an area of interest, add scale bar and north arrow
+ggplot(data = world) +
+  geom_sf() +
+  geom_sf(data = usa_states,
+          mapping = aes(geometry = geom),          
+          color = "black", 
+          fill = "gray") +
+  annotation_scale(location = "br", width_hint = 0.5) +  # add scale bar
+  annotation_north_arrow(location = "br",  # add north arrow
+                         which_north = "true", 
+                         pad_x = unit(0.75, "in"), 
+                         pad_y = unit(0.5, "in"),
+                         style = north_arrow_fancy_orienteering) +
+  coord_sf(xlim = c(-80, -65.12),  # zoom in on New Engand region
+           ylim = c(35, 50), 
+           expand = FALSE)
 ```
 
 ___
