@@ -12,16 +12,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ___
-**1. For this exercise, use your newly-developed ggplot chops to create some nice graphs from your own data (If you do not have a good data frame to use for graphics, use one of the many built-in data frames from R (other than mpg, which we are using in class)). Experiment with different themes, theme base sizes, aesthetics, mappings, and faceting. When you are finished, try exporting them to high quality pdfs, jpgs, eps files, or other formats that you would use for submission to a journal.**
+**1. For this exercise, use your newly-developed `ggplot` chops to create some nice graphs from your own data (If you do not have a good data frame to use for graphics, use one of the many built-in data frames from R (other than `mpg`, which we are using in class)). Experiment with different themes, theme base sizes, aesthetics, mappings, and faceting. When you are finished, try exporting them to high quality pdfs, jpgs, eps files, or other formats that you would use for submission to a journal.**
 
 (In this exercise, I encourage you to improve your graphics with elements that we have not (yet) covered in ggplot. For example, can you change the labels on a facet plot so that they are more informative than the variable names that are supplied from your data frame? Can you figure out how to add text annotations, lines and arrows to your graph? Can you figure out how to use custom colors that you have chosen for your fills and lines? Your resources for these explorations are google, Stack Overflow – and your TAs!)
-
-I am going to be making some ggplot figures from some data I have been analyzing showing zooplankton biomass across 16 experimental ponds that we sampled.
 
 ___
 ##### Part I: Zooplankton biomass across lakes
 
-The first graph I am going to create is a faceted stacked bar plot that summarizes the zooplankton biomass data that we have for each lake, habitat, and time of day that we sampled. I am going to bring in this data from an R object that I created from a data frame in my data analysis script for this project.
+I am going to be making some ggplot figures from some data I have been analyzing showing zooplankton biomass across 16 experimental ponds that we sampled. The first graph I am going to create is a faceted stacked bar plot that summarizes the zooplankton biomass data that we have for each lake, habitat, and time of day that we sampled. I am going to bring in this data from an R object that I created from a data frame in my data analysis script for this project.
 
 ```{r}
 # Load packages
@@ -221,7 +219,7 @@ z <- unlist(summary(regression)) # unlist model summary
 reg_summary <- list(slopeP = z$coefficients8, # p-value
                     R2 = z$r.squared) # multiple R-squared
 
-# Add the slope and R2 to the top left corner of p4
+# Add the slope and R2 to the top right corner of p4
 p4 + annotate("text", x = 224, y = 0.35, 
               label = paste("italic(R) ^ 2 ==", round(reg_summary$R2, 3)),
               parse = TRUE) + 

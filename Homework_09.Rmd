@@ -223,9 +223,4 @@ print(stats[2]) # print Tukey HSD results
 In the Tukey HSD graph, we can see that the confidence intervals do not cross the line at zero. This shows that all groups are significantly different from each other.
 
 ___
-**3. Optional. If time permits and you have the skills, try putting your program inside of a for loop and repeat the analysis with a different stochastic data set (each time you call a function that invokes the random number generator, it will create a new set of data for you to process). Can you create a data structure to store the summary statistics created in each pass through the loop? If not, your program will work, but it will only show the results from the final replicate (the previous results will be written over each time you traverse the loop).**
-
-Try to do after we learn for loops in lecture!
-
-___
 [Back to Home Page](index.html)
