@@ -17,7 +17,7 @@ Welcome to my personal webpage for Biology 381, Spring Semester 2022!
 ### **Homework Assignments**
 Link to [Homework 2](Homework_02.html): GitHub
 
-Link to [Homework 3](Homework_03.html): Regular expressions
+Link to [Homework 3](Homework_03.html): Regular expressions 
 
 Link to [Homework 4](Homework_04.html): Atomic vectors
 
