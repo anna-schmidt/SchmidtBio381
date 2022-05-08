@@ -24,11 +24,13 @@ print(n_dims)
 **Create a vector of consecutive integers from 1 to n_dims^2.**
 ```{r}
 my_vec <- 1:n_dims^2
+print(my_vec)
 ```
 
 **Use the sample function to randomly reshuffle these values.**
 ```{r}
 my_vec2 <- sample(my_vec)
+print(my_vec2)
 ```
 
 **create a square matrix with these elements.**
@@ -146,7 +148,7 @@ my_vector <- c(my_list_2[[1]], my_list_2[[2]], my_list_2[[3]])
 print(my_vector)
 ```
 
-what is the data type of this vector?
+**what is the data type of this vector?**
 ```{r}
 print(typeof(my_vector))
 ```

@@ -29,13 +29,12 @@ print(z)
 
 z <- 3*x^3 + 2*x^2 + 1
 print(z)
-
 ```
 
 ___
 #### **Question 2**
 
-Using the rep and seq functions, create the following vectors:
+Using the `rep` and `seq` functions, create the following vectors:
 
 ```{r}
 v <- seq(from=1, to=8)
@@ -57,7 +56,7 @@ print(v7)
 ___
 #### **Question 3**
 
-Create a vector of two random uniform numbers. In a spatial map, these can be interpreted as x and y coordinates that give the location of an individual (such as a marked forest tree in a plot that has been mapped). Using one of R’s inverse trigonometry functions (asin(), acos(), or atan()), convert these numbers into polar coordinates (If you don’t know what polar coordinates are, read about them on the web here, here, or in your calculus textbook).
+Create a vector of two random uniform numbers. In a spatial map, these can be interpreted as x and y coordinates that give the location of an individual (such as a marked forest tree in a plot that has been mapped). Using one of R’s inverse trigonometry functions (`asin()`, `acos()`, or `atan()`), convert these numbers into polar coordinates (If you don’t know what polar coordinates are, read about them on the web here, here, or in your calculus textbook).
 
 ```{r}
 v <- runif(2)
@@ -69,14 +68,13 @@ print(r)
 theta = asin(v[2]/r)
 print(theta)
 
-print(paste("Polar coordinate is (", r, ",", theta, ")"))
-
+print(paste("Polar coordinate is (",r,",",theta,")"))
 ```
 
 ___
 #### **Question 4**
 
-Create a vector queue <- c("sheep", "fox", "owl", "ant") where queue represents the animals that are lined up to enter Noah’s Ark, with the sheep at the front of the line. Using R expressions, update queue as:
+Create a vector `queue <- c("sheep", "fox", "owl", "ant")` where `queue` represents the animals that are lined up to enter Noah’s Ark, with the sheep at the front of the line. Using R expressions, update `queue` as:
 
 ```{r}
 queue <- c("sheep", "fox", "owl", "ant")

@@ -192,7 +192,7 @@ print(z)</code></pre>
 </div>
 <div id="question-2" class="section level4">
 <h4><strong>Question 2</strong></h4>
-<p>Using the rep and seq functions, create the following vectors:</p>
+<p>Using the <code>rep</code> and <code>seq</code> functions, create the following vectors:</p>
 <pre class="r"><code>v &lt;- seq(from=1, to=8)
 v2 &lt;- seq(from=7, to=1)
 v3 &lt;- c(v, v2)
@@ -212,23 +212,23 @@ print(v7)</code></pre>
 </div>
 <div id="question-3" class="section level4">
 <h4><strong>Question 3</strong></h4>
-<p>Create a vector of two random uniform numbers. In a spatial map, these can be interpreted as x and y coordinates that give the location of an individual (such as a marked forest tree in a plot that has been mapped). Using one of R’s inverse trigonometry functions (asin(), acos(), or atan()), convert these numbers into polar coordinates (If you don’t know what polar coordinates are, read about them on the web here, here, or in your calculus textbook).</p>
+<p>Create a vector of two random uniform numbers. In a spatial map, these can be interpreted as x and y coordinates that give the location of an individual (such as a marked forest tree in a plot that has been mapped). Using one of R’s inverse trigonometry functions (<code>asin()</code>, <code>acos()</code>, or <code>atan()</code>), convert these numbers into polar coordinates (If you don’t know what polar coordinates are, read about them on the web here, here, or in your calculus textbook).</p>
 <pre class="r"><code>v &lt;- runif(2)
 print(v)</code></pre>
-<pre><code>## [1] 0.08459695 0.46244113</code></pre>
+<pre><code>## [1] 0.7449852 0.6347930</code></pre>
 <pre class="r"><code>r &lt;- sqrt(v[1]^2 + v[2]^2)
 print(r)</code></pre>
-<pre><code>## [1] 0.4701154</code></pre>
+<pre><code>## [1] 0.9787569</code></pre>
 <pre class="r"><code>theta = asin(v[2]/r)
 print(theta)</code></pre>
-<pre><code>## [1] 1.389861</code></pre>
-<pre class="r"><code>print(paste(&quot;Polar coordinate is (&quot;, r, &quot;,&quot;, theta, &quot;)&quot;))</code></pre>
-<pre><code>## [1] &quot;Polar coordinate is ( 0.47011535074462 , 1.38986136949355 )&quot;</code></pre>
+<pre><code>## [1] 0.705705</code></pre>
+<pre class="r"><code>print(paste(&quot;Polar coordinate is (&quot;,r,&quot;,&quot;,theta,&quot;)&quot;))</code></pre>
+<pre><code>## [1] &quot;Polar coordinate is ( 0.978756893022396 , 0.70570502551574 )&quot;</code></pre>
 <hr />
 </div>
 <div id="question-4" class="section level4">
 <h4><strong>Question 4</strong></h4>
-<p>Create a vector queue &lt;- c(“sheep”, “fox”, “owl”, “ant”) where queue represents the animals that are lined up to enter Noah’s Ark, with the sheep at the front of the line. Using R expressions, update queue as:</p>
+<p>Create a vector <code>queue &lt;- c(&quot;sheep&quot;, &quot;fox&quot;, &quot;owl&quot;, &quot;ant&quot;)</code> where <code>queue</code> represents the animals that are lined up to enter Noah’s Ark, with the sheep at the front of the line. Using R expressions, update <code>queue</code> as:</p>
 <pre class="r"><code>queue &lt;- c(&quot;sheep&quot;, &quot;fox&quot;, &quot;owl&quot;, &quot;ant&quot;)
 print(queue)</code></pre>
 <pre><code>## [1] &quot;sheep&quot; &quot;fox&quot;   &quot;owl&quot;   &quot;ant&quot;</code></pre>
